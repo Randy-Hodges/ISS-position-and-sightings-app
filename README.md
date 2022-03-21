@@ -1,0 +1,1 @@
+docker build -t rhodgesd/iss_app:latest .
