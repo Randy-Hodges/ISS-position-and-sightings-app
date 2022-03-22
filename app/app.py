@@ -1,9 +1,10 @@
-from flask import Flask
+from flask import Flask, request
 import flask
 import requests
 import json
 import xmltodict
 import logging
+import os
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -11,13 +12,17 @@ app = Flask(__name__)
 
 STORE_EXTRA_DATA = False
 
+iss_position_data = {}
+iss_sighting_data = {}
+
 @app.route('/help', methods=['GET'])
 def help():
     help_string = '''
     This app is built to retrieve and filter through ISS position and sighting data.
     Here are all of the routes and what they do:
     ---------------------------------------------------------
-    /load_data -> load data into memory
+    /load_data -> load sighting and positional data into memory
+    REQUIRED WHEN FIRST STARTING THE SERVER
 
     /position/all -> get data from all epochs in the positional data
 
@@ -46,20 +51,42 @@ def help():
     '''
     return help_string
 
-@app.route('/load_data', methods=['POST'])
+@app.route('/load_data', methods=['GET', 'POST'])
 def load_data():
     '''
-    Returns all of the positional data for all of the epochs from the ISS.
+    Loads in data for all of the epochs from the ISS.
 
     Args:
         None
 
     Returns:
-        all_epochs (flask return object): The positional data for all of the epochs from the ISS.
+        (str): POST or GET message
     '''
-    
+    if request.method == 'POST':
 
-    return 'load data function not implemented yet'
+        global iss_position_data
+        global iss_sighting_data
+
+        iss_position_data.clear()
+        iss_sighting_data.clear()
+
+        logging.debug(f'Current directory and contents: {os.listdir()}')
+        with open('data/ISS.OEM_J2K_EPH.xml', 'r') as f:
+            iss_position_data = xmltodict.parse(f.read())
+
+        with open('data/XMLsightingData_citiesUSA06.xml', 'r') as f:
+            iss_sighting_data = json.loads(json.dumps(xmltodict.parse(f.read())))
+
+        return f'Data has been read from file\n'
+
+    else:
+        return """
+    This is a route for resetting stored data. You must perform
+    a POST request to this route to get it to work, e.g.:
+
+    curl -X POST localhost:5011/load_data
+
+"""
 
 
 @app.route('/position/all', methods=['GET'])
@@ -284,25 +311,12 @@ def get_positional_data():
     Returns:
         data (dict): posistional data of the ISS in dictionary form
     '''
-    # Getting data
-    logging.debug('requesting iss coordinate (positional) data')
-    url_data = 'https://nasa-public-data.s3.amazonaws.com/iss-coords/2022-02-13/ISS_OEM/ISS.OEM_J2K_EPH.xml'
-    r = requests.get(url=url_data)
-    logging.debug('response recieved')
-    data = xmltodict.parse(r.content)
-    logging.debug('response converted to dictionary')
-    logging.debug(f'type of data after parsing: {type(data)}')
     
-    # Storing data 
-    if STORE_EXTRA_DATA:
-        logging.debug('all positional data is now stored in "positionall.json"')
-        with open("positionall.json", "w") as outfile:
-            json.dump(data, outfile)
+    global iss_position_data
+    if len(iss_position_data) == 0:
+        logging.error('Data has not yet been loaded in, run the POST /load_data route first')
 
-    with open('ISS.OEM_J2K_EPH.xml', 'r') as f:
-        data = xmltodict.parse(f.read())
-
-    return data
+    return iss_position_data
 
 
 def get_sighting_data():
@@ -315,26 +329,11 @@ def get_sighting_data():
     Returns:
         data (dict): sighting data of the ISS in dictionary form
     '''
-    # Getting data
-    logging.debug('requesting iss sighting data')
-    url_data = 'https://nasa-public-data.s3.amazonaws.com/iss-coords/2022-02-13/ISS_sightings/XMLsightingData_citiesUSA06.xml'
-    r = requests.get(url=url_data)
-    logging.debug('response recieved')
-    data = xmltodict.parse(r.content)
-    logging.debug('response converted to dictionary')
-    logging.debug(f'type of data after parsing: {type(data)}')
-    
-    # Storing data
-    if STORE_EXTRA_DATA:
-        logging.debug('all sighting data is now stored in "sightings_all.json"')
-        with open("sightings_all.json", "w") as outfile:
-            json.dump(data, outfile)
+    global iss_sighting_data
+    if len(iss_sighting_data) == 0:
+        logging.error('Data has not yet been loaded in, run the POST /load_data route first')
 
-    
-    with open('XMLsightingData_citiesUSA06.xml', 'r') as f:
-        data = xmltodict.parse(f.read())
-
-    return data
+    return iss_sighting_data
 
 
 if __name__ == '__main__':
