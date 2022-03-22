@@ -1,5 +1,5 @@
 # ISS Position and Sightings App
-This repo contains a flask app that obtains and distributes data from the International Space Station. It is a great example of the creation of a flask app that uses ports, and contains many modern practices such as docstrings, unit tests, a Dockerfile, and a Makefile.
+This repo contains a flask app that obtains and distributes data from the International Space Station. It is a great example of the creation of a flask app that uses ports and contains many modern practices such as docstrings, unit tests, a Dockerfile, and a Makefile.
 
 ## Scripts and Folders
 
@@ -19,7 +19,7 @@ Used to assist the building of the containerized app.
 Tests the functionality of app.py.
 
 ## Download the original data
-Before running or containerizing the app, it is important to download the orignal data. These can be found here:
+Before running or containerizing the app, it is important to download the orignal data and put it in the /app/data folder. These can be found here:
 ```
  https://data.nasa.gov/Space-Science/ISS_COORDS_2022-02-13/r6u8-bhhq
 ```
@@ -37,7 +37,7 @@ https://nasa-public-data.s3.amazonaws.com/iss-coords/2022-02-13/ISS_sightings/XM
 ```
 
 ## Build a container from the Dockerfile
-Once the data is downloaded and is in the same directory as the Dockerfile, a container can be built from the Dockerfile. To do so, run the command
+Once the data is downloaded and is in the folder /data (which is same directory as the Dockerfile), a container can be built from the Dockerfile. To do so, run the command
 ```
 docker build -t rhodgesd/iss_app:latest .
 ```
