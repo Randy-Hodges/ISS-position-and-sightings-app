@@ -98,7 +98,7 @@ The route variable will change depending on what information is desired. For all
     /sightings/cities/<city> -> get all data for a particular city
     EXAMPLE: ../sightings/cities/Flemington
 ```
-#### Interpretting the return values of routes
+### Interpretting the return values of routes
 All of the routes return data in some form. For some routes, the data will be a set of strings in a list. This will look like a list of all regions in a particular area, or all cities, etc. There are also routes that return data in the form of a list of dictionaries. In these routes, each data point in the list will contain a lot of information pertaining to a particular sighting or Epoch.
 
 Additionally, there are two data sets which represent different things. All routes with the prefix /positions/... will utilize the positions data set (the Public distribution file) and will give data about each epoch from the ISS. All routes with the prefix /sightings/... will utilize the sighting data set (USA06) and will give information about places on earth where the ISS was observed.
