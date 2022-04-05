@@ -61,6 +61,17 @@ docker pull rhodgesd/iss_app:latest
 ```
 while having docker installed. You should receive 'latest: Pulling from rhodgesd/iss_app' and then a success message.
 
+## Run the flask app
+One can run the flask app by using the following command.
+```
+flask run -p 5011
+```
+These commands are convienient as well, and they show any logging that is happening on the server.
+```
+export FLASK_APP=app.py
+export FLASK_ENV=development
+```
+
 ## How to interact with the app and use all of the routes
 Once the app is up and running, you will need to use curl commands to interact and recieve data from the app. The curl commands will look like the following:
 ```
