@@ -66,7 +66,7 @@ One can run the flask app by using the following command.
 ```
 flask run -p 5011
 ```
-These commands are convienient as well, and they show any logging that is happening on the server.
+These commands are convienient as well, and they show any logging that is happening on the server. You should use these with a split terminal, one terminal that is running the flask app and one that is making calls to the flask app. In windows, use the word 'SET' instead of 'export' (linux).
 ```
 export FLASK_APP=app.py
 export FLASK_ENV=development
